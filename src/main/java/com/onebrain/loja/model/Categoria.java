@@ -29,5 +29,6 @@ public class Categoria extends TrilhaAuditavel {
     @ManyToMany(mappedBy = "categorias")
     private Set<Produto> produtos = new HashSet<>();
 
-
+    @Column(nullable = false, name = "ativo")
+    private boolean ativo;
 }

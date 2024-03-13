@@ -27,4 +27,6 @@ public class Marca {
     @OneToMany(mappedBy = "marca")
     private Set<Produto> produtos = new HashSet<>();
 
+    @Column(name = "ativo", nullable = false)
+    private boolean ativo;
 }
