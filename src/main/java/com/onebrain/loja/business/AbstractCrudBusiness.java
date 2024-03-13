@@ -10,6 +10,8 @@ public interface AbstractCrudBusiness<T> {
 
     T buscarPorId(Long id);
 
+    T buscarPorCodigo(String codigo);
+
     T salvarOuAtualizar(T entity, TipoOperacaoRepository operacao);
 
     void desativar(T entity);

@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class ProdutoBusinessImpl implements AbstractCrudBusiness<ProdutoViewDTO> {
@@ -39,6 +39,15 @@ public class ProdutoBusinessImpl implements AbstractCrudBusiness<ProdutoViewDTO>
 
         Produto produto = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado com o ID: " + id));
+
+        return ProdutoMapper.INSTANCE.entityToView(produto);
+    }
+
+    @Override
+    public ProdutoViewDTO buscarPorCodigo(String codigo) {
+        LOGGER.info("Buscando produto por codigo: {}", codigo);
+
+        Produto produto = repository.findProdutoByCodigoEqualsIgnoreCaseAndAtivoTrue(codigo);
 
         return ProdutoMapper.INSTANCE.entityToView(produto);
     }
@@ -83,5 +92,38 @@ public class ProdutoBusinessImpl implements AbstractCrudBusiness<ProdutoViewDTO>
         Produto produto = ProdutoMapper.INSTANCE.viewToEntity(entity);
         produto.setAtivo(true);
         repository.save(produto);
+    }
+
+    public List<ProdutoViewDTO> buscarPorInicioCodigo(String inicioCodigo) {
+        LOGGER.info("Buscando produtos que comecam com codigo: {}", inicioCodigo);
+        if(Objects.isNull(inicioCodigo)){
+            return new ArrayList<>();
+        }
+        List<Produto> produtos = repository.findProdutosByCodigoStartingWithAndAtivoTrue(inicioCodigo.toUpperCase());
+        return produtos
+                .stream().map(ProdutoMapper.INSTANCE::entityToView)
+                .toList();
+    }
+
+    public List<ProdutoViewDTO> buscarPorCodigoMarca(String codigoMarca) {
+        LOGGER.info("Buscando produtos que pertencem a marca: {}", codigoMarca);
+        if(Objects.isNull(codigoMarca)){
+            return new ArrayList<>();
+        }
+        List<Produto> produtos = repository.findByMarcaCodigoAndAtivoTrue(codigoMarca.toUpperCase());
+        return produtos
+                .stream().map(ProdutoMapper.INSTANCE::entityToView)
+                .toList();
+    }
+
+    public List<ProdutoViewDTO> buscarPorCodigoCategoria(String codigoCategoria) {
+        LOGGER.info("Buscando produtos que pertencem a categoria: {}", codigoCategoria);
+        if(Objects.isNull(codigoCategoria)){
+            return new ArrayList<>();
+        }
+        List<Produto> produtos = repository.findByCategoriasCodigoAndAtivoTrue(codigoCategoria.toUpperCase());
+        return produtos
+                .stream().map(ProdutoMapper.INSTANCE::entityToView)
+                .toList();
     }
 }

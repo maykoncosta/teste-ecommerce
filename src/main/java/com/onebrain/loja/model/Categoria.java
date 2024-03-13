@@ -20,6 +20,14 @@ public class Categoria extends TrilhaAuditavel {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Column(nullable = false, length = 20, name = "codigo")
+    private String codigo;
+
+    @Column(length = 50, name = "descricao")
+    private String descricao;
+
     @ManyToMany(mappedBy = "categorias")
     private Set<Produto> produtos = new HashSet<>();
+
+
 }

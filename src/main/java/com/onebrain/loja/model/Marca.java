@@ -18,6 +18,12 @@ public class Marca {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Column(nullable = false, length = 20, name = "codigo")
+    private String codigo;
+
+    @Column(length = 50, name = "descricao")
+    private String descricao;
+
     @OneToMany(mappedBy = "marca")
     private Set<Produto> produtos = new HashSet<>();
 
