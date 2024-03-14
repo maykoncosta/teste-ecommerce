@@ -24,7 +24,7 @@ public class MarcaBusinessImpl implements AbstractCrudBusiness<Marca> {
     public List<Marca> listarTodos() {
         LOGGER.info("Buscando todas as marcas.");
 
-        return repository.findAll();
+        return repository.findByAtivoTrue();
     }
 
     @Override

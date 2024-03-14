@@ -1,5 +1,6 @@
 package com.onebrain.loja.model;
 
+import com.onebrain.loja.audit.TrilhaAuditavel;
 import com.onebrain.loja.audit.TrilhaAuditavelListener;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import java.util.Set;
 @Setter
 @EntityListeners(TrilhaAuditavelListener.class)
 @Entity(name="marca")
-public class Marca {
+public class Marca extends TrilhaAuditavel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

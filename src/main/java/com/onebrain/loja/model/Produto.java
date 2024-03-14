@@ -22,8 +22,11 @@ public class Produto extends TrilhaAuditavel {
     @Column
     private Long id;
 
-    @Column(length = 50, nullable = false, name = "codigo")
+    @Column(length = 20, nullable = false, name = "codigo")
     private String codigo;
+
+    @Column(length = 50, nullable = false, name = "descricao")
+    private String descricao;
 
     @Column(nullable = false, name = "preco")
     private double preco;
