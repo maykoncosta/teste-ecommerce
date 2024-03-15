@@ -14,7 +14,7 @@ public interface AbstractCrudBusiness<T> {
 
     T salvarOuAtualizar(T entity, TipoOperacaoRepository operacao);
 
-    void desativar(T entity);
+    void desativar(Long id);
 
-    void ativar(T entity);
+    void ativar(Long id);
 }

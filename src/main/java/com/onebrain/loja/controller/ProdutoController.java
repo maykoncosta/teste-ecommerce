@@ -50,15 +50,13 @@ public class ProdutoController {
 
     @PatchMapping("/{id}/desativar")
     public ResponseEntity<Void> desativar(@PathVariable Long id) {
-        ProdutoViewDTO produtoViewDTO = produtoBusiness.buscarPorId(id);
-        produtoBusiness.desativar(produtoViewDTO);
+        produtoBusiness.desativar(id);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}/ativar")
     public ResponseEntity<Void> ativar(@PathVariable Long id) {
-        ProdutoViewDTO produtoViewDTO = produtoBusiness.buscarPorId(id);
-        produtoBusiness.ativar(produtoViewDTO);
+        produtoBusiness.ativar(id);
         return ResponseEntity.ok().build();
     }
 

@@ -1,7 +1,10 @@
 package com.onebrain.loja.business.impl;
 
+import com.onebrain.loja.Mapper.MarcaMapper;
 import com.onebrain.loja.business.AbstractCrudBusiness;
+import com.onebrain.loja.dto.MarcaViewDTO;
 import com.onebrain.loja.enums.TipoOperacaoRepository;
+import com.onebrain.loja.model.Categoria;
 import com.onebrain.loja.model.Marca;
 import com.onebrain.loja.repository.MarcaRepository;
 import org.slf4j.Logger;
@@ -13,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class MarcaBusinessImpl implements AbstractCrudBusiness<Marca> {
+public class MarcaBusinessImpl implements AbstractCrudBusiness<MarcaViewDTO> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MarcaBusinessImpl.class);
 
@@ -21,63 +24,70 @@ public class MarcaBusinessImpl implements AbstractCrudBusiness<Marca> {
     private MarcaRepository repository;
 
     @Override
-    public List<Marca> listarTodos() {
+    public List<MarcaViewDTO> listarTodos() {
         LOGGER.info("Buscando todas as marcas.");
+        List<Marca> marcas = repository.findByAtivoTrue();
 
-        return repository.findByAtivoTrue();
+        return marcas.stream().map(MarcaMapper.INSTANCE::entityToView).toList();
     }
 
     @Override
-    public Marca buscarPorId(Long id) {
+    public MarcaViewDTO buscarPorId(Long id) {
         LOGGER.info("Buscando marca por ID: {}", id);
-
-        return repository.findById(id)
+        Marca marca = repository.findMarcaByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new IllegalArgumentException("Marca não encontrada com o ID: " + id));
+        return MarcaMapper.INSTANCE.entityToView(marca);
     }
 
     @Override
-    public Marca buscarPorCodigo(String codigo) {
+    public MarcaViewDTO buscarPorCodigo(String codigo) {
         LOGGER.info("Buscando marca por código: {}", codigo);
+        Marca marca = repository.findByCodigoEqualsIgnoreCaseAndAtivoTrue(codigo)
+                .orElseThrow(() -> new IllegalArgumentException("Marca não encontrada com o codigo: " + codigo));
 
-        return repository.findByCodigoEqualsIgnoreCaseAndAtivoTrue(codigo);
+        return MarcaMapper.INSTANCE.entityToView(marca);
     }
 
     @Override
-    public Marca salvarOuAtualizar(Marca entity, TipoOperacaoRepository operacao) {
-        LOGGER.info("Salvando/Atualizando marca: {}", entity.getCodigo());
+    public MarcaViewDTO salvarOuAtualizar(MarcaViewDTO dto, TipoOperacaoRepository operacao) {
+        LOGGER.info("Salvando/Atualizando marca: {}", dto.getCodigo());
 
+        Marca entidade = MarcaMapper.INSTANCE.viewToEntity(dto);
         Marca savedMarca;
 
         if (operacao == TipoOperacaoRepository.SALVAR) {
-            savedMarca = repository.save(entity);
+            savedMarca = repository.save(entidade);
         } else if (operacao == TipoOperacaoRepository.ATUALIZAR) {
-            if (Objects.isNull(entity.getId())) {
+            if (Objects.isNull(entidade.getId())) {
                 throw new IllegalArgumentException("ID da marca não pode ser nulo para atualização.");
             }
-            repository.findById(entity.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Marca não encontrada com o ID: " + entity.getId()));
+            repository.findById(entidade.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Marca não encontrada com o ID: " + entidade.getId()));
 
-            savedMarca = repository.save(entity);
+            savedMarca = repository.save(entidade);
         } else {
             throw new IllegalArgumentException("Tipo de operação de repositório inválido: " + operacao);
         }
 
-        return savedMarca;
+        return MarcaMapper.INSTANCE.entityToView(savedMarca);
     }
 
     @Override
-    public void desativar(Marca entity) {
-        LOGGER.info("Desativando marca: {}", entity.getCodigo());
-
-        entity.setAtivo(false);
-        repository.save(entity);
+    public void desativar(Long id) {
+        LOGGER.info("Desativando marca: {}", id);
+        Marca entidade = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + id));
+        entidade.setAtivo(false);
+        repository.save(entidade);
     }
 
     @Override
-    public void ativar(Marca entity) {
-        LOGGER.info("Ativando marca: {}", entity.getCodigo());
+    public void ativar(Long id) {
+        LOGGER.info("Ativando marca: {}", id);
+        Marca entidade = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + id));
 
-        entity.setAtivo(true);
-        repository.save(entity);
+        entidade.setAtivo(true);
+        repository.save(entidade);
     }
 }

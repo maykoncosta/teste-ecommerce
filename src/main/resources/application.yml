@@ -14,3 +14,9 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
+  sql:
+    init:
+      mode: always
+    script:
+      encoding: utf-8
+      schema: classpath:schema.sql

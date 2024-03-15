@@ -87,19 +87,21 @@ public class ProdutoBusinessImpl implements AbstractCrudBusiness<ProdutoViewDTO>
     }
 
     @Override
-    public void desativar(ProdutoViewDTO entity) {
-        LOGGER.info("Desativando produto: {}", entity);
+    public void desativar(Long id) {
+        LOGGER.info("Desativando produto: {}", id);
+        Produto produto = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado com o ID: " + id));
 
-        Produto produto = ProdutoMapper.INSTANCE.viewToEntity(entity);
         produto.setAtivo(false);
         repository.save(produto);
     }
 
     @Override
-    public void ativar(ProdutoViewDTO entity) {
-        LOGGER.info("Ativando produto: {}", entity);
+    public void ativar(Long id) {
+        LOGGER.info("Ativando produto: {}", id);
+        Produto produto = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado com o ID: " + id));
 
-        Produto produto = ProdutoMapper.INSTANCE.viewToEntity(entity);
         produto.setAtivo(true);
         repository.save(produto);
     }
@@ -139,7 +141,8 @@ public class ProdutoBusinessImpl implements AbstractCrudBusiness<ProdutoViewDTO>
 
     private void validarEAtualizarMarcaECategoria(ProdutoViewDTO dto, Produto entity) {
         String codigoMarca = dto.getCodigoMarca();
-        Marca marca = marcaRepository.findByCodigoEqualsIgnoreCaseAndAtivoTrue(codigoMarca);
+        Marca marca = marcaRepository.findByCodigoEqualsIgnoreCaseAndAtivoTrue(codigoMarca)
+                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado com o ID: " + dto.getId()));
         Set<Categoria> categoriaList = new HashSet<>();
         dto.getCodigoCategorias().forEach(categoria ->
             categoriaList.add(categoriaRepository.findByCodigoEqualsIgnoreCaseAndAtivoTrue(categoria))

@@ -1,6 +1,8 @@
 package com.onebrain.loja.business.impl;
 
+import com.onebrain.loja.Mapper.CategoriaMapper;
 import com.onebrain.loja.business.AbstractCrudBusiness;
+import com.onebrain.loja.dto.CategoriaViewDTO;
 import com.onebrain.loja.enums.TipoOperacaoRepository;
 import com.onebrain.loja.model.Categoria;
 import com.onebrain.loja.repository.CategoriaRepository;
@@ -13,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class CategoriaBusinessImpl implements AbstractCrudBusiness<Categoria> {
+public class CategoriaBusinessImpl implements AbstractCrudBusiness<CategoriaViewDTO> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CategoriaBusinessImpl.class);
 
@@ -21,63 +23,74 @@ public class CategoriaBusinessImpl implements AbstractCrudBusiness<Categoria> {
     private CategoriaRepository repository;
 
     @Override
-    public List<Categoria> listarTodos() {
+    public List<CategoriaViewDTO> listarTodos() {
         LOGGER.info("Buscando todas as categorias.");
-
-        return repository.findByAtivoTrue();
+        List<Categoria> categorias = repository.findByAtivoTrue();
+        return categorias.stream()
+                .map(CategoriaMapper.INSTANCE::entityToView)
+                .toList();
     }
 
     @Override
-    public Categoria buscarPorId(Long id) {
+    public CategoriaViewDTO buscarPorId(Long id) {
         LOGGER.info("Buscando categoria por ID: {}", id);
-
-        return repository.findById(id)
+        Categoria entidade = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + id));
+        
+        
+        return CategoriaMapper.INSTANCE.entityToView(entidade);
     }
 
     @Override
-    public Categoria buscarPorCodigo(String codigo) {
+    public CategoriaViewDTO buscarPorCodigo(String codigo) {
         LOGGER.info("Buscando categoria por código: {}", codigo);
 
-        return repository.findByCodigoEqualsIgnoreCaseAndAtivoTrue(codigo);
+        Categoria categoria = repository.findByCodigoEqualsIgnoreCaseAndAtivoTrue(codigo);
+        return CategoriaMapper.INSTANCE.entityToView(categoria);
     }
 
     @Override
-    public Categoria salvarOuAtualizar(Categoria entity, TipoOperacaoRepository operacao) {
-        LOGGER.info("Salvando/Atualizando categoria: {}", entity.getCodigo());
+    public CategoriaViewDTO salvarOuAtualizar(CategoriaViewDTO dto, TipoOperacaoRepository operacao) {
+        LOGGER.info("Salvando/Atualizando categoria: {}", dto.getCodigo());
 
+        Categoria entidade = CategoriaMapper.INSTANCE.viewToEntity(dto);
         Categoria savedCategoria;
 
         if (operacao == TipoOperacaoRepository.SALVAR) {
-            savedCategoria = repository.save(entity);
+            savedCategoria = repository.save(entidade);
         } else if (operacao == TipoOperacaoRepository.ATUALIZAR) {
-            if (Objects.isNull(entity.getId())) {
+            if (Objects.isNull(entidade.getId())) {
                 throw new IllegalArgumentException("ID da categoria não pode ser nulo para atualização.");
             }
-            repository.findById(entity.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + entity.getId()));
+            repository.findById(entidade.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + entidade.getId()));
 
-            savedCategoria = repository.save(entity);
+            savedCategoria = repository.save(entidade);
         } else {
             throw new IllegalArgumentException("Tipo de operação de repositório inválido: " + operacao);
         }
 
-        return savedCategoria;
+        return CategoriaMapper.INSTANCE.entityToView(savedCategoria);
     }
 
     @Override
-    public void desativar(Categoria entity) {
-        LOGGER.info("Desativando categoria: {}", entity);
+    public void desativar(Long id) {
+        LOGGER.info("Desativando categoria: {}", id);
+        Categoria entidade = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + id));
 
-        entity.setAtivo(false);
-        repository.save(entity);
+        entidade.setAtivo(false);
+        repository.save(entidade);
     }
 
     @Override
-    public void ativar(Categoria entity) {
-        LOGGER.info("Ativando categoria: {}", entity);
+    public void ativar(Long id) {
+        LOGGER.info("Ativando categoria: {}", id);
+        Categoria entidade = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + id));
 
-        entity.setAtivo(true);
-        repository.save(entity);
+        entidade.setAtivo(true);
+        repository.save(entidade);
     }
+    
 }
