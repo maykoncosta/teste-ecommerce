@@ -52,19 +52,22 @@ public class MarcaBusinessImpl implements AbstractCrudBusiness<MarcaViewDTO> {
     public MarcaViewDTO salvarOuAtualizar(MarcaViewDTO dto, TipoOperacaoRepository operacao) {
         LOGGER.info("Salvando/Atualizando marca: {}", dto.getCodigo());
 
-        Marca entidade = MarcaMapper.INSTANCE.viewToEntity(dto);
+        Marca marca = MarcaMapper.INSTANCE.viewToEntity(dto);
+        marca.setCodigo(dto.getCodigo().toUpperCase());
         Marca savedMarca;
 
         if (operacao == TipoOperacaoRepository.SALVAR) {
-            savedMarca = repository.save(entidade);
+            savedMarca = repository.save(marca);
         } else if (operacao == TipoOperacaoRepository.ATUALIZAR) {
-            if (Objects.isNull(entidade.getId())) {
+            if (Objects.isNull(marca.getId())) {
                 throw new IllegalArgumentException("ID da marca não pode ser nulo para atualização.");
             }
-            repository.findById(entidade.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Marca não encontrada com o ID: " + entidade.getId()));
+            Marca entidade = repository.findById(marca.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Marca não encontrada com o ID: " + marca.getId()));
 
-            savedMarca = repository.save(entidade);
+            marca.setDataCriacao(entidade.getDataCriacao());
+            marca.setUsuarioCriacao(entidade.getUsuarioCriacao());
+            savedMarca = repository.save(marca);
         } else {
             throw new IllegalArgumentException("Tipo de operação de repositório inválido: " + operacao);
         }
@@ -75,7 +78,7 @@ public class MarcaBusinessImpl implements AbstractCrudBusiness<MarcaViewDTO> {
     @Override
     public void desativar(Long id) {
         LOGGER.info("Desativando marca: {}", id);
-        Marca entidade = repository.findById(id)
+        Marca entidade = repository.findMarcaByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + id));
         entidade.setAtivo(false);
         repository.save(entidade);

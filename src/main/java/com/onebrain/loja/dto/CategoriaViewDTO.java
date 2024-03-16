@@ -1,13 +1,15 @@
 package com.onebrain.loja.dto;
 
 import com.onebrain.loja.enums.IndicadorDisponibilidade;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class CategoriaViewDTO {
 
     private Long id;

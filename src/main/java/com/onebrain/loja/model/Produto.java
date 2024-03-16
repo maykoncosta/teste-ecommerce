@@ -5,14 +5,16 @@ import com.onebrain.loja.audit.TrilhaAuditavelListener;
 import com.onebrain.loja.enums.IndicadorDisponibilidade;
 import com.onebrain.loja.enums.IndicadorStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @EntityListeners(TrilhaAuditavelListener.class)
 @Entity(name="produto")
 public class Produto extends TrilhaAuditavel {

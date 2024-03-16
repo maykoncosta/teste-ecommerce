@@ -48,13 +48,13 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoAtualizado);
     }
 
-    @PatchMapping("/{id}/desativar")
+    @PutMapping("/{id}/desativar")
     public ResponseEntity<Void> desativar(@PathVariable Long id) {
         produtoBusiness.desativar(id);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{id}/ativar")
+    @PutMapping("/{id}/ativar")
     public ResponseEntity<Void> ativar(@PathVariable Long id) {
         produtoBusiness.ativar(id);
         return ResponseEntity.ok().build();
@@ -66,13 +66,13 @@ public class ProdutoController {
         return new ResponseEntity<>(produtos, HttpStatus.OK);
     }
 
-    @GetMapping("/codigo-marca/{codigoMarca}")
+    @GetMapping("/marca/{codigoMarca}")
     public ResponseEntity<List<ProdutoViewDTO>> buscarPorCodigoMarca(@PathVariable String codigoMarca) {
         List<ProdutoViewDTO> produtos = produtoBusiness.buscarPorCodigoMarca(codigoMarca);
         return new ResponseEntity<>(produtos, HttpStatus.OK);
     }
 
-    @GetMapping("/codigo-categoria/{codigoCategoria}")
+    @GetMapping("/categoria/{codigoCategoria}")
     public ResponseEntity<List<ProdutoViewDTO>> buscarPorCodigoCategoria(@PathVariable String codigoCategoria) {
         List<ProdutoViewDTO> produtos = produtoBusiness.buscarPorCodigoCategoria(codigoCategoria);
         return new ResponseEntity<>(produtos, HttpStatus.OK);

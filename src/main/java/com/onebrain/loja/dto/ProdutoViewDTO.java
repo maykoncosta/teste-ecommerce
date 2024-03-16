@@ -1,13 +1,15 @@
 package com.onebrain.loja.dto;
 
 import com.onebrain.loja.enums.IndicadorDisponibilidade;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class ProdutoViewDTO {
 
     private Long id;
@@ -18,7 +20,7 @@ public class ProdutoViewDTO {
 
     private double preco;
 
-    private int quantidade;
+    private String sku;
 
     private IndicadorDisponibilidade disponibilidade;
 

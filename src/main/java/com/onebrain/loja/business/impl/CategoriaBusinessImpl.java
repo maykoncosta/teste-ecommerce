@@ -34,7 +34,7 @@ public class CategoriaBusinessImpl implements AbstractCrudBusiness<CategoriaView
     @Override
     public CategoriaViewDTO buscarPorId(Long id) {
         LOGGER.info("Buscando categoria por ID: {}", id);
-        Categoria entidade = repository.findById(id)
+        Categoria entidade = repository.findCategoriaByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + id));
         
         
@@ -45,7 +45,8 @@ public class CategoriaBusinessImpl implements AbstractCrudBusiness<CategoriaView
     public CategoriaViewDTO buscarPorCodigo(String codigo) {
         LOGGER.info("Buscando categoria por código: {}", codigo);
 
-        Categoria categoria = repository.findByCodigoEqualsIgnoreCaseAndAtivoTrue(codigo);
+        Categoria categoria = repository.findByCodigoEqualsIgnoreCaseAndAtivoTrue(codigo)
+                .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o codigo: " + codigo));
         return CategoriaMapper.INSTANCE.entityToView(categoria);
     }
 
@@ -53,19 +54,22 @@ public class CategoriaBusinessImpl implements AbstractCrudBusiness<CategoriaView
     public CategoriaViewDTO salvarOuAtualizar(CategoriaViewDTO dto, TipoOperacaoRepository operacao) {
         LOGGER.info("Salvando/Atualizando categoria: {}", dto.getCodigo());
 
-        Categoria entidade = CategoriaMapper.INSTANCE.viewToEntity(dto);
+        Categoria categoria = CategoriaMapper.INSTANCE.viewToEntity(dto);
+        categoria.setCodigo(dto.getCodigo().toUpperCase());
         Categoria savedCategoria;
 
         if (operacao == TipoOperacaoRepository.SALVAR) {
-            savedCategoria = repository.save(entidade);
+            savedCategoria = repository.save(categoria);
         } else if (operacao == TipoOperacaoRepository.ATUALIZAR) {
-            if (Objects.isNull(entidade.getId())) {
+            if (Objects.isNull(categoria.getId())) {
                 throw new IllegalArgumentException("ID da categoria não pode ser nulo para atualização.");
             }
-            repository.findById(entidade.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + entidade.getId()));
+            Categoria entidade = repository.findById(categoria.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + categoria.getId()));
 
-            savedCategoria = repository.save(entidade);
+            categoria.setDataCriacao(entidade.getDataCriacao());
+            categoria.setUsuarioCriacao(entidade.getUsuarioCriacao());
+            savedCategoria = repository.save(categoria);
         } else {
             throw new IllegalArgumentException("Tipo de operação de repositório inválido: " + operacao);
         }
@@ -76,7 +80,7 @@ public class CategoriaBusinessImpl implements AbstractCrudBusiness<CategoriaView
     @Override
     public void desativar(Long id) {
         LOGGER.info("Desativando categoria: {}", id);
-        Categoria entidade = repository.findById(id)
+        Categoria entidade = repository.findCategoriaByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + id));
 
         entidade.setAtivo(false);

@@ -8,7 +8,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Mapper
 public interface CategoriaMapper {
@@ -17,11 +19,17 @@ public interface CategoriaMapper {
 
     Categoria viewToEntity(CategoriaViewDTO dto);
 
-    @Mapping(target = "codigoProdutoList", expression = "java(obterCodigoProdutos(entidade))")
+    @Mapping(target = "codigoProdutoList", expression = "java(obterCodigoProdutosAtivos(entidade))")
     CategoriaViewDTO entityToView(Categoria entidade);
 
-    default List<String> obterCodigoProdutos(Categoria entidade){
-        return entidade.getProdutos().stream().map(Produto::getCodigo).toList();
+    default List<String> obterCodigoProdutosAtivos(Categoria entidade){
+        if(Objects.nonNull(entidade.getProdutos())){
+            return entidade.getProdutos()
+                    .stream().filter(Produto::isAtivo)
+                    .map(Produto::getCodigo).toList();
+        }
+
+        return new ArrayList<>();
     }
 
 }

@@ -64,19 +64,19 @@ public class ProdutoBusinessImpl implements AbstractCrudBusiness<ProdutoViewDTO>
     @Override
     public ProdutoViewDTO salvarOuAtualizar(ProdutoViewDTO dto, TipoOperacaoRepository operacao) {
         LOGGER.info("Salvando/Atualizando produto: {}", dto.getCodigo());
-
         Produto produto = ProdutoMapper.INSTANCE.viewToEntity(dto);
+        produto.setCodigo(dto.getCodigo().toUpperCase());
         validarEAtualizarMarcaECategoria(dto, produto);
         Produto savedProduto;
 
         if (operacao == TipoOperacaoRepository.SALVAR) {
             savedProduto = repository.save(produto);
         } else if (operacao == TipoOperacaoRepository.ATUALIZAR) {
-            if (Objects.isNull(produto.getId())) {
-                throw new IllegalArgumentException("ID do produto não pode ser nulo para atualização.");
-            }
-            repository.findById(dto.getId())
+            Produto entidade = repository.findById(dto.getId())
                     .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado com o ID: " + dto.getId()));
+
+            produto.setDataCriacao(entidade.getDataCriacao());
+            produto.setUsuarioCriacao(entidade.getUsuarioCriacao());
 
             savedProduto = repository.save(produto);
         } else {
@@ -139,15 +139,15 @@ public class ProdutoBusinessImpl implements AbstractCrudBusiness<ProdutoViewDTO>
                 .toList();
     }
 
-    private void validarEAtualizarMarcaECategoria(ProdutoViewDTO dto, Produto entity) {
+    protected void validarEAtualizarMarcaECategoria(ProdutoViewDTO dto, Produto entity) {
         String codigoMarca = dto.getCodigoMarca();
         Marca marca = marcaRepository.findByCodigoEqualsIgnoreCaseAndAtivoTrue(codigoMarca)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado com o ID: " + dto.getId()));
         Set<Categoria> categoriaList = new HashSet<>();
         dto.getCodigoCategorias().forEach(categoria ->
-            categoriaList.add(categoriaRepository.findByCodigoEqualsIgnoreCaseAndAtivoTrue(categoria))
+            categoriaList.add(categoriaRepository.findByCodigoEqualsIgnoreCaseAndAtivoTrue(categoria)
+                    .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o codigo: " + categoria)))
         );
-        //TODO lancar exception caso nao tenha marca ou categorias
 
         entity.setMarca(marca);
         entity.setCategorias(categoriaList);

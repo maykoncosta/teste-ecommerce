@@ -4,14 +4,16 @@ package com.onebrain.loja.model;
 import com.onebrain.loja.audit.TrilhaAuditavel;
 import com.onebrain.loja.audit.TrilhaAuditavelListener;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @EntityListeners(TrilhaAuditavelListener.class)
 @Entity(name="categoria")
 public class Categoria extends TrilhaAuditavel {

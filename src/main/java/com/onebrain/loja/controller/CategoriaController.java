@@ -48,13 +48,13 @@ public class CategoriaController {
         return ResponseEntity.ok(categoriaAtualizada);
     }
 
-    @PatchMapping("/{id}/desativar")
+    @PutMapping("/{id}/desativar")
     public ResponseEntity<Void> desativar(@PathVariable Long id) {
         categoriaBusiness.desativar(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}/ativar")
+    @PutMapping("/{id}/ativar")
     public ResponseEntity<Void> ativar(@PathVariable Long id) {
         categoriaBusiness.ativar(id);
         return ResponseEntity.noContent().build();

@@ -9,7 +9,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Mapper
 public interface MarcaMapper {
@@ -18,11 +20,17 @@ public interface MarcaMapper {
 
     Marca viewToEntity(MarcaViewDTO dto);
 
-    @Mapping(target = "codigoProdutoList", expression = "java(obterCodigoProdutos(entidade))")
+    @Mapping(target = "codigoProdutoList", expression = "java(obterCodigoProdutosAtivos(entidade))")
     MarcaViewDTO entityToView(Marca entidade);
 
-    default List<String> obterCodigoProdutos(Marca entidade){
-        return entidade.getProdutos().stream().map(Produto::getCodigo).toList();
+    default List<String> obterCodigoProdutosAtivos(Marca entidade){
+        if(Objects.nonNull(entidade.getProdutos())){
+            return entidade.getProdutos()
+                    .stream().filter(Produto::isAtivo)
+                    .map(Produto::getCodigo).toList();
+        }
+
+        return new ArrayList<>();
     }
 
 }
