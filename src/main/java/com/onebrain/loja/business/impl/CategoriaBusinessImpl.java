@@ -96,5 +96,14 @@ public class CategoriaBusinessImpl implements AbstractCrudBusiness<CategoriaView
         entidade.setAtivo(true);
         repository.save(entidade);
     }
-    
+
+    @Override
+    public List<CategoriaViewDTO> listarTodosDesativados() {
+        LOGGER.info("Buscando todas as categorias.");
+        List<Categoria> categorias = repository.findByAtivoFalse();
+        return categorias.stream()
+                .map(CategoriaMapper.INSTANCE::entityToView)
+                .toList();
+    }
+
 }

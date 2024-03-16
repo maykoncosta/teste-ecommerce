@@ -4,7 +4,6 @@ import com.onebrain.loja.Mapper.MarcaMapper;
 import com.onebrain.loja.business.AbstractCrudBusiness;
 import com.onebrain.loja.dto.MarcaViewDTO;
 import com.onebrain.loja.enums.TipoOperacaoRepository;
-import com.onebrain.loja.model.Categoria;
 import com.onebrain.loja.model.Marca;
 import com.onebrain.loja.repository.MarcaRepository;
 import org.slf4j.Logger;
@@ -92,5 +91,13 @@ public class MarcaBusinessImpl implements AbstractCrudBusiness<MarcaViewDTO> {
 
         entidade.setAtivo(true);
         repository.save(entidade);
+    }
+
+    @Override
+    public List<MarcaViewDTO> listarTodosDesativados() {
+        LOGGER.info("Buscando todas as marcas.");
+        List<Marca> marcas = repository.findByAtivoFalse();
+
+        return marcas.stream().map(MarcaMapper.INSTANCE::entityToView).toList();
     }
 }

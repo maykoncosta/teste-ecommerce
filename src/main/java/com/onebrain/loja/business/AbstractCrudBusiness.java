@@ -17,4 +17,6 @@ public interface AbstractCrudBusiness<T> {
     void desativar(Long id);
 
     void ativar(Long id);
+
+    List<T> listarTodosDesativados();
 }

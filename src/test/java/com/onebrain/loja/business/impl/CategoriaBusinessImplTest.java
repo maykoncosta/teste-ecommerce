@@ -4,7 +4,6 @@ import com.onebrain.loja.dto.CategoriaViewDTO;
 import com.onebrain.loja.enums.TipoOperacaoRepository;
 import com.onebrain.loja.model.Categoria;
 import com.onebrain.loja.repository.CategoriaRepository;
-import com.onebrain.loja.repository.CategoriaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

@@ -23,16 +23,30 @@ public class CategoriaController {
         return new ResponseEntity<>(categorias, HttpStatus.OK);
     }
 
+    @GetMapping("/desativados")
+    public ResponseEntity<List<CategoriaViewDTO>> listarTodosDesativados() {
+        List<CategoriaViewDTO> categorias = categoriaBusiness.listarTodosDesativados();
+        return new ResponseEntity<>(categorias, HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CategoriaViewDTO> buscarPorId(@PathVariable Long id) {
-        CategoriaViewDTO dto = categoriaBusiness.buscarPorId(id);
-        return ResponseEntity.ok(dto);
+        try{
+            CategoriaViewDTO dto = categoriaBusiness.buscarPorId(id);
+            return ResponseEntity.ok(dto);
+        }catch (IllegalArgumentException ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/codigo/{codigo}")
     public ResponseEntity<CategoriaViewDTO> buscarPorCodigo(@PathVariable String codigo) {
-        CategoriaViewDTO categoria = categoriaBusiness.buscarPorCodigo(codigo);
-        return ResponseEntity.ok(categoria);
+        try{
+            CategoriaViewDTO categoria = categoriaBusiness.buscarPorCodigo(codigo);
+            return ResponseEntity.ok(categoria);
+        }catch (IllegalArgumentException ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
@@ -43,20 +57,32 @@ public class CategoriaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CategoriaViewDTO> atualizar(@PathVariable Long id, @RequestBody CategoriaViewDTO dto) {
-        dto.setId(id);
-        CategoriaViewDTO categoriaAtualizada = categoriaBusiness.salvarOuAtualizar(dto, TipoOperacaoRepository.ATUALIZAR);
-        return ResponseEntity.ok(categoriaAtualizada);
+        try{
+            dto.setId(id);
+            CategoriaViewDTO categoriaAtualizada = categoriaBusiness.salvarOuAtualizar(dto, TipoOperacaoRepository.ATUALIZAR);
+            return ResponseEntity.ok(categoriaAtualizada);
+        }catch (IllegalArgumentException ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{id}/desativar")
     public ResponseEntity<Void> desativar(@PathVariable Long id) {
-        categoriaBusiness.desativar(id);
-        return ResponseEntity.noContent().build();
+        try{
+            categoriaBusiness.desativar(id);
+            return ResponseEntity.ok().build();
+        }catch (IllegalArgumentException ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{id}/ativar")
     public ResponseEntity<Void> ativar(@PathVariable Long id) {
-        categoriaBusiness.ativar(id);
-        return ResponseEntity.noContent().build();
+        try{
+            categoriaBusiness.ativar(id);
+            return ResponseEntity.ok().build();
+        }catch (IllegalArgumentException ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 }

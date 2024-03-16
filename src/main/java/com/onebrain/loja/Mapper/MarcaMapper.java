@@ -1,8 +1,6 @@
 package com.onebrain.loja.Mapper;
 
 import com.onebrain.loja.dto.MarcaViewDTO;
-import com.onebrain.loja.dto.ProdutoViewDTO;
-import com.onebrain.loja.model.Categoria;
 import com.onebrain.loja.model.Marca;
 import com.onebrain.loja.model.Produto;
 import org.mapstruct.Mapper;

@@ -56,7 +56,8 @@ public class ProdutoBusinessImpl implements AbstractCrudBusiness<ProdutoViewDTO>
     public ProdutoViewDTO buscarPorCodigo(String codigo) {
         LOGGER.info("Buscando produto por codigo: {}", codigo);
 
-        Produto produto = repository.findProdutoByCodigoEqualsIgnoreCaseAndAtivoTrue(codigo);
+        Produto produto = repository.findProdutoByCodigoEqualsIgnoreCaseAndAtivoTrue(codigo)
+                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado com o codigo: " + codigo));
 
         return ProdutoMapper.INSTANCE.entityToView(produto);
     }
@@ -70,6 +71,7 @@ public class ProdutoBusinessImpl implements AbstractCrudBusiness<ProdutoViewDTO>
         Produto savedProduto;
 
         if (operacao == TipoOperacaoRepository.SALVAR) {
+            produto.setSku(UUID.randomUUID().toString());
             savedProduto = repository.save(produto);
         } else if (operacao == TipoOperacaoRepository.ATUALIZAR) {
             Produto entidade = repository.findById(dto.getId())
@@ -77,7 +79,7 @@ public class ProdutoBusinessImpl implements AbstractCrudBusiness<ProdutoViewDTO>
 
             produto.setDataCriacao(entidade.getDataCriacao());
             produto.setUsuarioCriacao(entidade.getUsuarioCriacao());
-
+            produto.setSku(entidade.getSku());
             savedProduto = repository.save(produto);
         } else {
             throw new IllegalArgumentException("Tipo de operação de repositório inválido: " + operacao);
@@ -134,6 +136,16 @@ public class ProdutoBusinessImpl implements AbstractCrudBusiness<ProdutoViewDTO>
             return new ArrayList<>();
         }
         List<Produto> produtos = repository.findByCategoriasCodigoAndAtivoTrue(codigoCategoria.toUpperCase());
+        return produtos
+                .stream().map(ProdutoMapper.INSTANCE::entityToView)
+                .toList();
+    }
+
+    @Override
+    public List<ProdutoViewDTO> listarTodosDesativados() {
+        LOGGER.info("Buscando todos os produtos ativos.");
+
+        List<Produto> produtos = repository.findProdutosByAtivoFalse();
         return produtos
                 .stream().map(ProdutoMapper.INSTANCE::entityToView)
                 .toList();

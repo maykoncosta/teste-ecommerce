@@ -10,8 +10,8 @@
 	</parent>
 	<groupId>com.onebrain</groupId>
 	<artifactId>loja</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>loja</name>
+	<version>1.0.0</version>
+	<name>teste-loja</name>
 	<description>Projeto para a construcao de uma loja</description>
 	<properties>
 		<java.version>17</java.version>
@@ -48,11 +48,6 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -97,6 +92,14 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>com.onebrain.loja.LojaApplication</mainClass>
+					<layout>JAR</layout>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

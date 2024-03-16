@@ -23,6 +23,12 @@ public class ProdutoController {
         return new ResponseEntity<>(produtos, HttpStatus.OK);
     }
 
+    @GetMapping("/desativados")
+    public ResponseEntity<List<ProdutoViewDTO>> listarTodosDesativados() {
+        List<ProdutoViewDTO> produtos = produtoBusiness.listarTodosDesativados();
+        return new ResponseEntity<>(produtos, HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ProdutoViewDTO> buscarPorId(@PathVariable Long id) {
         ProdutoViewDTO produto = produtoBusiness.buscarPorId(id);
@@ -31,8 +37,12 @@ public class ProdutoController {
 
     @GetMapping("/codigo/{codigo}")
     public ResponseEntity<ProdutoViewDTO> buscarPorCodigo(@PathVariable String codigo) {
-        ProdutoViewDTO produto = produtoBusiness.buscarPorCodigo(codigo);
-        return ResponseEntity.ok(produto);
+        try {
+            ProdutoViewDTO produto = produtoBusiness.buscarPorCodigo(codigo);
+            return ResponseEntity.ok(produto);
+        }catch (IllegalArgumentException ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
@@ -44,20 +54,34 @@ public class ProdutoController {
     @PutMapping("/{id}")
     public ResponseEntity<ProdutoViewDTO> atualizar(@PathVariable Long id, @RequestBody ProdutoViewDTO produtoViewDTO) {
         produtoViewDTO.setId(id);
-        ProdutoViewDTO produtoAtualizado = produtoBusiness.salvarOuAtualizar(produtoViewDTO, TipoOperacaoRepository.ATUALIZAR);
-        return ResponseEntity.ok(produtoAtualizado);
+        try{
+            ProdutoViewDTO produtoAtualizado = produtoBusiness.salvarOuAtualizar(produtoViewDTO, TipoOperacaoRepository.ATUALIZAR);
+            return ResponseEntity.ok(produtoAtualizado);
+        }catch (IllegalArgumentException ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{id}/desativar")
     public ResponseEntity<Void> desativar(@PathVariable Long id) {
-        produtoBusiness.desativar(id);
-        return ResponseEntity.ok().build();
+        try{
+            produtoBusiness.desativar(id);
+            return ResponseEntity.ok().build();
+        }
+        catch (IllegalArgumentException ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{id}/ativar")
     public ResponseEntity<Void> ativar(@PathVariable Long id) {
-        produtoBusiness.ativar(id);
-        return ResponseEntity.ok().build();
+        try{
+            produtoBusiness.ativar(id);
+            return ResponseEntity.ok().build();
+        }
+        catch (IllegalArgumentException ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/inicio-codigo/{inicioCodigo}")

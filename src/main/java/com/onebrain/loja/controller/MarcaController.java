@@ -3,7 +3,6 @@ package com.onebrain.loja.controller;
 import com.onebrain.loja.business.impl.MarcaBusinessImpl;
 import com.onebrain.loja.dto.MarcaViewDTO;
 import com.onebrain.loja.enums.TipoOperacaoRepository;
-import com.onebrain.loja.model.Marca;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,16 +23,30 @@ public class MarcaController {
         return new ResponseEntity<>(marcas, HttpStatus.OK);
     }
 
+    @GetMapping("/desativados")
+    public ResponseEntity<List<MarcaViewDTO>> listarTodosDesativados() {
+        List<MarcaViewDTO> marcas = marcaBusiness.listarTodosDesativados();
+        return new ResponseEntity<>(marcas, HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<MarcaViewDTO> buscarPorId(@PathVariable Long id) {
-        MarcaViewDTO dto = marcaBusiness.buscarPorId(id);
-        return ResponseEntity.ok(dto);
+        try{
+            MarcaViewDTO dto = marcaBusiness.buscarPorId(id);
+            return ResponseEntity.ok(dto);
+        }catch (IllegalArgumentException ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/codigo/{codigo}")
     public ResponseEntity<MarcaViewDTO> buscarPorCodigo(@PathVariable String codigo) {
-        MarcaViewDTO dto = marcaBusiness.buscarPorCodigo(codigo);
-        return ResponseEntity.ok(dto);
+        try{
+            MarcaViewDTO dto = marcaBusiness.buscarPorCodigo(codigo);
+            return ResponseEntity.ok(dto);
+        }catch (IllegalArgumentException ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
@@ -44,21 +57,34 @@ public class MarcaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<MarcaViewDTO> atualizar(@PathVariable Long id, @RequestBody MarcaViewDTO dto) {
-        dto.setId(id);
-        MarcaViewDTO dtoAtualizado = marcaBusiness.salvarOuAtualizar(dto, TipoOperacaoRepository.ATUALIZAR);
-        return ResponseEntity.ok(dtoAtualizado);
+        try{
+            dto.setId(id);
+            MarcaViewDTO dtoAtualizado = marcaBusiness.salvarOuAtualizar(dto, TipoOperacaoRepository.ATUALIZAR);
+            return ResponseEntity.ok(dtoAtualizado);
+        }catch (IllegalArgumentException ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PatchMapping("/{id}/desativar")
+    @PutMapping("/{id}/desativar")
     public ResponseEntity<Void> desativar(@PathVariable Long id) {
-        marcaBusiness.desativar(id);
-        return ResponseEntity.noContent().build();
+        try{
+            marcaBusiness.desativar(id);
+            return ResponseEntity.ok().build();
+        }catch (IllegalArgumentException ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PatchMapping("/{id}/ativar")
+    @PutMapping("/{id}/ativar")
     public ResponseEntity<Void> ativar(@PathVariable Long id) {
-        marcaBusiness.ativar(id);
-        return ResponseEntity.noContent().build();
+        try{
+            marcaBusiness.ativar(id);
+            return ResponseEntity.ok().build();
+        }
+        catch (IllegalArgumentException ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 }
 

@@ -78,7 +78,7 @@ public class ProdutoBusinessImplTest {
     @Test
     public void testBuscarPorCodigo() {
         String codigo = "PROD01";
-        when(produtoRepository.findProdutoByCodigoEqualsIgnoreCaseAndAtivoTrue(codigo)).thenReturn(produto1);
+        when(produtoRepository.findProdutoByCodigoEqualsIgnoreCaseAndAtivoTrue(codigo)).thenReturn(Optional.ofNullable(produto1));
 
         ProdutoViewDTO produtoViewDTO = produtoBusiness.buscarPorCodigo(codigo);
 

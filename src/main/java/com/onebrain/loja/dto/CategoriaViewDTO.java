@@ -1,6 +1,5 @@
 package com.onebrain.loja.dto;
 
-import com.onebrain.loja.enums.IndicadorDisponibilidade;
 import lombok.*;
 
 import java.util.List;
