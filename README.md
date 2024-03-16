@@ -21,3 +21,7 @@ Compilar o projeto
 
 Executar o projeto
 <code>java -jar target/teste-loja.jar</code>
+
+Link da collection do postman
+
+<code>https://www.postman.com/josemaykon/workspace/teste-ecommerce/collection/16084833-4dbda412-8a21-4e4c-99b9-46377a425a55?action=share&creator=16084833</code>
